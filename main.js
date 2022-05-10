@@ -22,7 +22,12 @@ const createWindow = async () => {
             preload: path.join(__dirname, 'preload.js')
         }
     })
-    mainWindow.setBounds(secondDisplay.bounds)
+    if (secondDisplay) {
+        mainWindow.setBounds(secondDisplay.bounds)
+    }
+    if (!isMac) {
+        mainWindow.setFullScreen(true)
+    }
     // and load the index.html of the app.
     mainWindow.loadFile('index.html')
 
