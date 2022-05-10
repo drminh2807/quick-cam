@@ -1,10 +1,13 @@
 // main.js
 
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, screen, ipcMain, Menu, ipcRenderer } = require('electron')
 const path = require('path')
 
 const createWindow = () => {
+    const displays = screen.getAllDisplays()
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const secondDisplay = displays.find(d => d.id !== primaryDisplay.id)
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 1920,
@@ -13,7 +16,7 @@ const createWindow = () => {
             preload: path.join(__dirname, 'preload.js')
         }
     })
-
+    mainWindow.setBounds(secondDisplay.bounds)
     // and load the index.html of the app.
     mainWindow.loadFile('index.html')
 
@@ -43,3 +46,26 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+ipcMain.handle('setCameraSources', (event, sources) => {
+    const cameraMenu = {
+        label: 'Sources',
+        submenu: sources.map((i, index) => ({
+            label: i.text,
+            type: 'radio',
+            checked: index === 0,
+            click: () => {
+                event.sender.send('setCameraId', i.value)
+            }
+        }))
+    }
+    const { Menu } = require('electron')
+
+    const template = [
+        { role: 'appMenu' },
+        cameraMenu,
+    ]
+
+    const menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu)
+})

@@ -12,3 +12,16 @@ window.addEventListener('DOMContentLoaded', () => {
         replaceText(`${dependency}-version`, process.versions[dependency])
     }
 })
+const { ipcRenderer, contextBridge } = require("electron");
+
+contextBridge.exposeInMainWorld("api", {
+    setCameraSources: function (sources) {
+        ipcRenderer.invoke('setCameraSources', sources);
+    },
+    addCameraIdUpdateListener: (callback) => {
+        window.onCameraIdUpdate = callback
+    }
+});
+ipcRenderer.on('setCameraId', (e, cameraId) => {
+    window.onCameraIdUpdate(cameraId)
+})
