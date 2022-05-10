@@ -28,9 +28,11 @@ function getStream() {
 	}
 
 	const constraints = {
-		video: window.cameraId !== undefined ?
-			{ deviceId: { exact: window.cameraId } } :
-			{ width: { ideal: 1920 }, height: { ideal: 1080 } },
+		video: {
+			deviceId: { exact: window.cameraId },
+			width: { exact: 1920 },
+			height: { exact: 1080 }
+		}
 	};
 	navigator.mediaDevices
 		.getUserMedia(constraints)
