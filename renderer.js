@@ -12,12 +12,15 @@ function gotDevices(deviceInfos) {
 			text: item.label || `camera ${index}`,
 			value: item.deviceId
 		}))
-
-	window.api.setCameraSources(videoSelect);
-	window.api.addCameraIdUpdateListener((cameraId) => {
-		window.cameraId = cameraId
+	if (window.api) {
+		window.api.setCameraSources(videoSelect);
+		window.api.addCameraIdUpdateListener((cameraId) => {
+			window.cameraId = cameraId
+			getStream()
+		})
+	} else {
 		getStream()
-	})
+	}
 }
 
 function getStream() {
